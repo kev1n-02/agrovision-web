@@ -1,0 +1,114 @@
+<div class="marco">
+  <!-- ===== Barra lateral (computador) ===== -->
+  <nav class="riel" aria-label="Menú principal">
+    <a routerLink="/inicio" class="marca">
+      <i class="bi bi-flower1" aria-hidden="true"></i>
+      <span>AgroVision</span>
+    </a>
+
+    <ul class="riel-lista">
+      @for (item of menu(); track item.ruta) {
+        <li>
+          @if (item.disponible) {
+            <a [routerLink]="item.ruta" routerLinkActive="activo" class="riel-enlace">
+              <i class="bi {{ item.icono }}" aria-hidden="true"></i>{{ item.texto }}
+            </a>
+          } @else {
+            <span class="riel-enlace pendiente" aria-disabled="true" title="Se habilita en la siguiente etapa">
+              <i class="bi {{ item.icono }}" aria-hidden="true"></i>{{ item.texto }}
+              <small>pronto</small>
+            </span>
+          }
+        </li>
+      }
+    </ul>
+
+    <div class="riel-usuario">
+      <div class="riel-nombre">{{ auth.usuario()?.nombres }}</div>
+      <div class="riel-rol">{{ nombreRol() }}</div>
+      <button type="button" class="btn btn-sm btn-outline-light mt-2" (click)="cerrarSesion()">
+        <i class="bi bi-box-arrow-left me-1" aria-hidden="true"></i>Cerrar sesión
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== Cabecera (celular) ===== -->
+  <header class="cabecera-movil">
+    <a routerLink="/inicio" class="marca">
+      <i class="bi bi-flower1" aria-hidden="true"></i>
+      <span>AgroVision</span>
+    </a>
+    <button type="button" class="iniciales" (click)="masAbierto.set(true)" aria-label="Abrir menú de usuario">
+      {{ iniciales() }}
+    </button>
+  </header>
+
+  <!-- ===== Contenido de cada pantalla ===== -->
+  <main class="contenido">
+    <router-outlet />
+  </main>
+
+  <!-- ===== Barra inferior (celular) ===== -->
+  <nav class="barra-movil" aria-label="Menú principal">
+    @for (item of menuMovil().slice(0, 2); track item.ruta) {
+      <ng-container [ngTemplateOutlet]="enlaceMovil" [ngTemplateOutletContext]="{ $implicit: item }" />
+    }
+    <span class="diagnosticar" aria-disabled="true" title="Se habilita en la siguiente etapa">
+      <span class="diagnosticar-boton"><i class="bi bi-camera-fill" aria-hidden="true"></i></span>
+      Diagnosticar
+    </span>
+    @for (item of menuMovil().slice(2); track item.ruta) {
+      <ng-container [ngTemplateOutlet]="enlaceMovil" [ngTemplateOutletContext]="{ $implicit: item }" />
+    }
+    <button type="button" class="barra-enlace" (click)="masAbierto.set(true)">
+      <i class="bi bi-three-dots" aria-hidden="true"></i>Más
+    </button>
+  </nav>
+
+  <ng-template #enlaceMovil let-item>
+    @if (item.disponible) {
+      <a [routerLink]="item.ruta" routerLinkActive="activo" class="barra-enlace">
+        <i class="bi {{ item.icono }}" aria-hidden="true"></i>{{ item.texto }}
+      </a>
+    } @else {
+      <span class="barra-enlace pendiente" aria-disabled="true">
+        <i class="bi {{ item.icono }}" aria-hidden="true"></i>{{ item.texto }}
+      </span>
+    }
+  </ng-template>
+
+  <!-- ===== Panel "Más" (celular) ===== -->
+  @if (masAbierto()) {
+    <div class="velo" (click)="masAbierto.set(false)" aria-hidden="true"></div>
+    <section class="hoja-mas" role="dialog" aria-modal="true" aria-label="Más opciones">
+      <div class="hoja-mas-usuario">
+        <div>
+          <div class="fw-bold">{{ auth.usuario()?.nombres }}</div>
+          <div class="text-secondary small">{{ nombreRol() }}</div>
+          <div class="text-secondary small">{{ auth.usuario()?.correo }}</div>
+        </div>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="masAbierto.set(false)"></button>
+      </div>
+      <ul class="list-unstyled mb-3">
+        @for (item of menuMas(); track item.ruta) {
+          <li>
+            @if (item.disponible) {
+              <a [routerLink]="item.ruta" class="hoja-mas-enlace" (click)="masAbierto.set(false)">
+                <i class="bi {{ item.icono }}" aria-hidden="true"></i>{{ item.texto }}
+              </a>
+            } @else {
+              <span class="hoja-mas-enlace pendiente" aria-disabled="true">
+                <i class="bi {{ item.icono }}" aria-hidden="true"></i>{{ item.texto }}<small>pronto</small>
+              </span>
+            }
+          </li>
+        }
+      </ul>
+      <button type="button" class="btn btn-outline-danger w-100" (click)="cerrarSesion()">
+        <i class="bi bi-box-arrow-left me-1" aria-hidden="true"></i>Cerrar sesión
+      </button>
+    </section>
+  }
+
+  <app-avisos />
+</div>

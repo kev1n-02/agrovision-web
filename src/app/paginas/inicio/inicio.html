@@ -1,0 +1,133 @@
+<header class="encabezado">
+  <div>
+    <h1>{{ saludo() }}, {{ auth.primerNombre() }}</h1>
+    <p class="subtitulo">
+      @if (auth.tieneRol('PRODUCTOR')) {
+        Así están sus fincas en los últimos {{ dias() }} días.
+      } @else {
+        Así están todas las fincas en los últimos {{ dias() }} días.
+      }
+    </p>
+  </div>
+  <div class="btn-group" role="group" aria-label="Periodo del resumen">
+    @for (opcion of periodos; track opcion) {
+      <button type="button" class="btn btn-sm" [class.btn-agv]="dias() === opcion"
+              [class.btn-outline-secondary]="dias() !== opcion" [attr.aria-pressed]="dias() === opcion"
+              (click)="cambiarPeriodo(opcion)">{{ opcion }} días</button>
+    }
+  </div>
+</header>
+
+@if (cargando() && !panel()) {
+  <p class="estado-carga"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Cargando el resumen</p>
+}
+
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center justify-content-between gap-3" role="alert">
+    <span>{{ error() }}</span>
+    <button type="button" class="btn btn-sm btn-outline-danger" (click)="cargar()">Reintentar</button>
+  </div>
+}
+
+@if (panel(); as p) {
+  <!-- 1. Por atender: lo primero que se ve -->
+  <section class="atender" [class.al-dia]="p.alertas.length === 0" aria-labelledby="titulo-atender">
+    <h2 id="titulo-atender">
+      Por atender
+      @if (p.alertas.length > 0) { <span class="contador">{{ p.alertas.length }}</span> }
+    </h2>
+    @if (p.alertas.length === 0) {
+      <p class="mb-0"><i class="bi bi-check2-circle me-2" aria-hidden="true"></i>Todo al día: los diagnósticos están revisados y los tratamientos tienen evaluaciones recientes.</p>
+    } @else {
+      <ul class="alertas">
+        @for (alerta of p.alertas; track $index) {
+          <li [class.informativa]="alerta.nivel === 'informacion'">
+            <i class="bi {{ iconoAlerta(alerta) }}" aria-hidden="true"></i>
+            <span>{{ alerta.mensaje }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <!-- 2. Cifras del periodo -->
+  <dl class="cifras" [class.actualizando]="cargando()">
+    <div><dt>Fincas</dt><dd>{{ p.tarjetas.fincas }}</dd></div>
+    <div><dt>Parcelas</dt><dd>{{ p.tarjetas.parcelas }}</dd></div>
+    <div><dt>Diagnósticos en {{ dias() }} días</dt><dd>{{ p.tarjetas.diagnosticosPeriodo }}</dd></div>
+    <div [class.urgente]="p.tarjetas.pendientesRevision > 0"><dt>Por revisar</dt><dd>{{ p.tarjetas.pendientesRevision }}</dd></div>
+    <div><dt>Tratamientos activos</dt><dd>{{ p.tarjetas.tratamientosActivos }}</dd></div>
+    <div><dt>Informes emitidos</dt><dd>{{ p.tarjetas.informesEmitidos }}</dd></div>
+    @if (p.tarjetas.informesBorrador !== undefined) {
+      <div><dt>Informes en borrador</dt><dd>{{ p.tarjetas.informesBorrador }}</dd></div>
+    }
+  </dl>
+
+  <div class="columnas">
+    <!-- 3. Qué se está diagnosticando -->
+    <section aria-labelledby="titulo-distribucion">
+      <h2 id="titulo-distribucion">Qué se está diagnosticando</h2>
+      @if (p.distribucion.length === 0) {
+        <p class="vacio">No hay diagnósticos en este periodo. Aparecerán aquí cuando se analicen fotos de hojas.</p>
+      } @else {
+        <ul class="distribucion">
+          @for (fila of p.distribucion; track fila.codigo) {
+            <li>
+              <div class="distribucion-texto">
+                <span><span class="punto" [style.background]="colorEnfermedad(fila.codigo)" aria-hidden="true"></span>{{ fila.enfermedad }}</span>
+                <span class="text-secondary">{{ fila.casos }} {{ fila.casos === 1 ? 'caso' : 'casos' }} ({{ porcentaje(fila.casos) }} %)</span>
+              </div>
+              <div class="barra" role="presentation">
+                <div class="relleno" [style.width.%]="porcentaje(fila.casos)" [style.background]="colorEnfermedad(fila.codigo)"></div>
+              </div>
+            </li>
+          }
+        </ul>
+        @if (p.tarjetas.enfermedadMasFrecuente; as frecuente) {
+          <p class="nota">La enfermedad más frecuente es {{ frecuente.enfermedad.toLowerCase() }}, con {{ frecuente.casos }} de {{ totalCasos() }} diagnósticos.</p>
+        }
+      }
+    </section>
+
+    <!-- 4. Últimos diagnósticos -->
+    <section aria-labelledby="titulo-ultimos">
+      <h2 id="titulo-ultimos">Últimos diagnósticos</h2>
+      @if (p.ultimosDiagnosticos.length === 0) {
+        <p class="vacio">Todavía no hay diagnósticos. Tome una foto de una hoja desde "Diagnosticar" para empezar.</p>
+      } @else {
+        <ul class="ultimos">
+          @for (d of p.ultimosDiagnosticos; track d.id) {
+            <li>
+              <span class="punto" [style.background]="colorEnfermedad(d.codigo)" aria-hidden="true"></span>
+              <div class="ultimos-texto">
+                <strong>{{ d.enfermedad }}</strong>
+                <span class="text-secondary">{{ d.finca }}, parcela {{ d.parcela }}</span>
+                <span class="text-secondary small">{{ d.fecha }}</span>
+              </div>
+              <div class="ultimos-estado">
+                <span class="confianza">{{ confianza(d.confianza) }}</span>
+                <span class="badge" [class.text-bg-warning]="d.estado === 'pendiente'"
+                      [class.text-bg-success]="d.estado === 'confirmado'"
+                      [class.text-bg-info]="d.estado === 'corregido'">{{ nombreEstado[d.estado] }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+
+  @if (p.usuariosPorRol; as usuarios) {
+    <section class="usuarios" aria-labelledby="titulo-usuarios">
+      <h2 id="titulo-usuarios">Usuarios del sistema</h2>
+      <table class="table table-sm mb-0">
+        <thead><tr><th scope="col">Rol</th><th scope="col" class="text-end">Activos</th><th scope="col" class="text-end">Inactivos</th></tr></thead>
+        <tbody>
+          @for (u of usuarios; track u.rol) {
+            <tr><td>{{ nombreRol[u.rol] }}</td><td class="text-end">{{ u.activos }}</td><td class="text-end">{{ u.inactivos }}</td></tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+}

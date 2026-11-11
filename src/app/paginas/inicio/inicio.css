@@ -1,0 +1,203 @@
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -.015em;
+  margin: 0 0 .2rem;
+}
+
+.subtitulo { color: var(--agv-tenue); margin: 0; }
+
+h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 .9rem;
+}
+
+.estado-carga { color: var(--agv-tenue); }
+
+/* ---------- 1. Por atender: el bloque principal de la página ---------- */
+.atender {
+  background: #fff;
+  border: 1px solid var(--agv-borde);
+  border-left: 6px solid var(--agv-manzana);
+  border-radius: .6rem;
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.atender.al-dia {
+  border-left-color: var(--agv-hoja);
+  background: var(--agv-hoja-clara);
+}
+
+.contador {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.7rem;
+  height: 1.7rem;
+  margin-left: .4rem;
+  border-radius: 999px;
+  background: var(--agv-manzana);
+  color: #fff;
+  font-size: .9rem;
+}
+
+.alertas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.alertas li {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  padding: .6rem 0;
+  border-top: 1px solid var(--agv-borde);
+  line-height: 1.4;
+}
+
+.alertas li:first-child { border-top: 0; padding-top: 0; }
+.alertas .bi { color: var(--agv-manzana); font-size: 1.15rem; margin-top: .05rem; }
+.alertas .informativa .bi { color: var(--agv-polen); }
+
+/* ---------- 2. Cifras: una franja con divisiones, no tarjetas sueltas ---------- */
+.cifras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  background: #fff;
+  border: 1px solid var(--agv-borde);
+  border-radius: .6rem;
+  margin: 0 0 2rem;
+  overflow: hidden;
+  transition: opacity .2s;
+}
+
+.cifras.actualizando { opacity: .55; }
+
+.cifras > div {
+  padding: .9rem 1.1rem;
+  border-right: 1px solid var(--agv-borde);
+  border-bottom: 1px solid var(--agv-borde);
+  margin-right: -1px;   /* evita doble línea en el borde derecho */
+  margin-bottom: -1px;
+}
+
+.cifras dt {
+  font-weight: 400;
+  font-size: .88rem;
+  color: var(--agv-tenue);
+}
+
+.cifras dd {
+  margin: .15rem 0 0;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.cifras .urgente dd { color: var(--agv-manzana); }
+
+/* ---------- 3 y 4. Dos columnas en pantallas anchas ---------- */
+.columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.vacio { color: var(--agv-tenue); max-width: 46ch; }
+
+.punto {
+  display: inline-block;
+  width: .7rem;
+  height: .7rem;
+  border-radius: 50%;
+  margin-right: .5rem;
+  flex-shrink: 0;
+}
+
+.distribucion { list-style: none; padding: 0; margin: 0; }
+.distribucion li { margin-bottom: .9rem; }
+
+.distribucion-texto {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: .3rem;
+}
+
+.barra {
+  height: .7rem;
+  background: #e6e9e1;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.relleno { height: 100%; border-radius: inherit; min-width: .7rem; }
+
+.nota { margin: .4rem 0 0; color: var(--agv-tenue); }
+
+.ultimos { list-style: none; padding: 0; margin: 0; }
+
+.ultimos li {
+  display: flex;
+  align-items: flex-start;
+  gap: .4rem;
+  padding: .75rem 0;
+  border-bottom: 1px solid var(--agv-borde);
+}
+
+.ultimos .punto { margin-top: .4rem; }
+
+.ultimos-texto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ultimos-estado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .3rem;
+}
+
+.confianza { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.usuarios { max-width: 28rem; }
+
+/* Pantallas anchas: todas las cifras en una sola franja (6 o 7 según el rol). */
+@media (min-width: 1200px) {
+  .cifras {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .columnas { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+@media (max-width: 575.98px) {
+  h1 { font-size: 1.5rem; }
+  .cifras { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cifras dd { font-size: 1.65rem; }
+  .atender { padding: 1rem 1.1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cifras { transition: none; }
+}

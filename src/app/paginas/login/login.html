@@ -1,0 +1,63 @@
+<main class="acceso">
+  <section class="presentacion" aria-hidden="true">
+    <div class="marca">
+      <i class="bi bi-flower1"></i>
+      <span>AgroVision</span>
+    </div>
+    <p class="lema">Fotografíe una hoja de manzano y sepa qué enfermedad tiene, cómo tratarla y si el tratamiento está funcionando.</p>
+    <svg class="hoja" viewBox="0 0 200 260" role="presentation">
+      <path d="M100 250 C 40 200, 10 120, 40 50 C 60 10, 140 10, 160 50 C 190 120, 160 200, 100 250 Z" />
+      <path class="nervio" d="M100 245 L 100 40 M100 90 L 60 60 M100 90 L 140 60 M100 140 L 50 105 M100 140 L 150 105 M100 190 L 60 160 M100 190 L 140 160" />
+    </svg>
+  </section>
+
+  <section class="formulario">
+    <form [formGroup]="formulario" (ngSubmit)="ingresar()" novalidate>
+      <h1>Iniciar sesión</h1>
+      <p class="ayuda">Use el correo y la contraseña que le entregó el administrador.</p>
+
+      @if (aviso) {
+        <div class="alert alert-warning py-2" role="alert">{{ aviso }}</div>
+      }
+      @if (errorGeneral()) {
+        <div class="alert alert-danger py-2" role="alert">{{ errorGeneral() }}</div>
+      }
+
+      <div class="mb-3">
+        <label for="correo" class="form-label">Correo</label>
+        <input id="correo" type="email" class="form-control form-control-lg" formControlName="correo"
+               autocomplete="username" [class.is-invalid]="!!errorDe('correo')"
+               [attr.aria-describedby]="errorDe('correo') ? 'error-correo' : null">
+        @if (errorDe('correo'); as mensaje) {
+          <div id="error-correo" class="invalid-feedback">{{ mensaje }}</div>
+        }
+      </div>
+
+      <div class="mb-4">
+        <label for="contrasena" class="form-label">Contraseña</label>
+        <div class="input-group input-group-lg has-validation">
+          <input id="contrasena" class="form-control" formControlName="contrasena"
+                 [type]="verContrasena() ? 'text' : 'password'" autocomplete="current-password"
+                 [class.is-invalid]="!!errorDe('contrasena')"
+                 [attr.aria-describedby]="errorDe('contrasena') ? 'error-contrasena' : null">
+          <button type="button" class="btn btn-outline-secondary" (click)="verContrasena.set(!verContrasena())"
+                  [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <i class="bi" [class.bi-eye]="!verContrasena()" [class.bi-eye-slash]="verContrasena()" aria-hidden="true"></i>
+          </button>
+          @if (errorDe('contrasena'); as mensaje) {
+            <div id="error-contrasena" class="invalid-feedback">{{ mensaje }}</div>
+          }
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-agv btn-lg w-100" [disabled]="cargando()">
+        @if (cargando()) {
+          <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+          Ingresando
+        } @else {
+          Ingresar
+        }
+      </button>
+    </form>
+  </section>
+</main>

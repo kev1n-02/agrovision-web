@@ -1,1 +1,69 @@
-/* You can add global styles to this file, and also import other style files */
+/* =====================================================================
+   Estilos globales de AgroVision
+   Bootstrap y Bootstrap Icons se cargan antes (angular.json); aquí se
+   definen los colores del sistema y se ajusta Bootstrap a ellos.
+   ===================================================================== */
+:root {
+  /* Paleta: hoja de manzano, corteza, manzana, polen */
+  --agv-hoja: #2f5d3a;
+  --agv-hoja-oscura: #1f4128;
+  --agv-hoja-clara: #e6eedf;
+  --agv-corteza: #2b2a26;
+  --agv-tenue: #5c6157;
+  --agv-manzana: #b5352b;
+  --agv-polen: #a87a14;
+  --agv-fondo: #f5f6f2;
+  --agv-borde: #d9ddd3;
+
+  /* Bootstrap usa estas variables: así toma la paleta y la fuente */
+  --bs-body-font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --bs-body-color: var(--agv-corteza);
+  --bs-body-bg: var(--agv-fondo);
+  --bs-border-color: var(--agv-borde);
+  --bs-link-color: var(--agv-hoja);
+  --bs-link-color-rgb: 47, 93, 58;
+  --bs-link-hover-color: var(--agv-hoja-oscura);
+  --bs-link-hover-color-rgb: 31, 65, 40;
+  --bs-focus-ring-color: rgba(47, 93, 58, .35);
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Botón principal del sistema (verde hoja): class="btn btn-agv" */
+.btn-agv {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--agv-hoja);
+  --bs-btn-border-color: var(--agv-hoja);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--agv-hoja-oscura);
+  --bs-btn-hover-border-color: var(--agv-hoja-oscura);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #183420;
+  --bs-btn-active-border-color: #183420;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--agv-hoja);
+  --bs-btn-disabled-border-color: var(--agv-hoja);
+  --bs-btn-focus-shadow-rgb: 47, 93, 58;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #7fa784;
+  box-shadow: 0 0 0 .25rem rgba(47, 93, 58, .2);
+}
+
+/* Foco visible al navegar con teclado (accesibilidad) */
+:focus-visible {
+  outline: 3px solid #7fa784;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
